@@ -19,42 +19,10 @@ ProjectAudioProcessorEditor::ProjectAudioProcessorEditor(ProjectAudioProcessor& 
 {
 	// Make sure that before the constructor has finished, you've set the
 	// editor's size to whatever you need it to be.
-	setSize(500, 300);
-	for (uint32_t i = 0; i < 1; i++)
-	{
-		SetupSoundTrack1(i);
-		SetupSoundTrack2(i);
-	}
+	setSize(800, 800);
+
 	pv = new PhaseVocoder();
-	/*addAndMakeVisible(m_master_bin_shift);
-	m_master_bin_shift.setSliderStyle(Slider::SliderStyle::LinearHorizontal);
-	m_master_bin_shift.setRange(0.1f, 10.0f);
-	m_master_bin_shift.setSkewFactorFromMidPoint(1.0f);
-	m_master_bin_shift.setValue(2.0f);
-	m_master_bin_shift.setBounds((int)((float)getWidth() * 0.3f), (int)((float)getHeight() * 0.15f),
-		(int)((float)getWidth() * 0.25f), (int)((float)getHeight() * 0.05f));
-	m_master_bin_shift.setColour(Slider::ColourIds::thumbColourId, Colour::fromRGB(0, 0, 0));
-	m_master_bin_shift.setColour(Slider::ColourIds::trackColourId, Colour::fromRGB(255, 255, 255));
-	m_master_bin_shift.setTextBoxStyle(Slider::TextBoxBelow, false, 100, 25);
-	m_master_bin_shift.addListener(this);
-	m_master_bin_shift.setVisible(false);*/
 
-	/*addAndMakeVisible(m_set_all_bins);
-	m_set_all_bins.setButtonText("Sound Track 1");
-	m_set_all_bins.setBounds((int)((float)getWidth() * 0.15f), (int)((0.1f)* getHeight()),
-		(int)((float)getWidth() * 0.25f), (int)((float)getHeight() * 0.05f));
-	m_set_all_bins.addListener(this);
-
-	addAndMakeVisible(m_set_all_ranges);
-	m_set_all_ranges.setButtonText("Sound Track 2");
-	m_set_all_ranges.setBounds((int)((float)getWidth() * 0.6f), (int)((0.1f)* getHeight()),
-		(int)((float)getWidth() * 0.25f), (int)((float)getHeight() * 0.05f));
-	m_set_all_ranges.addListener(this);
-*/
-	/*addAndMakeVisible(m_phase_vocoder_type);
-	m_phase_vocoder_type.addListener(this);
-	m_phase_vocoder_type.setSelectedId(1);
-	m_phase_vocoder_type.setBounds((int)(0.025f * getWidth()), (int)(0.025f*getHeight()), (int)(getWidth()*0.2f), 20);*/
 
 	//combobox Magniude
 	addAndMakeVisible(magnitude_mode);
@@ -87,7 +55,7 @@ ProjectAudioProcessorEditor::ProjectAudioProcessorEditor(ProjectAudioProcessor& 
 	thresholdSlider.setColour(Slider::ColourIds::thumbColourId, Colour::fromRGB(150, 0, 175));
 	thresholdSlider.setColour(Slider::ColourIds::trackColourId, Colour::fromRGB(100, 0, 125));
 	thresholdSlider.addListener(this);
-	setSize(500, 300);
+	setSize(800, 800);
 }
 
 ProjectAudioProcessorEditor::~ProjectAudioProcessorEditor()
@@ -116,28 +84,64 @@ void ProjectAudioProcessorEditor::PhaseVocoderChanged()
 
 }
 
+void ProjectAudioProcessorEditor::SetupSlider(uint32_t slider_idx)
+{
+	uint32_t low = 55 << slider_idx;
+	uint32_t hi = 55 << (slider_idx + 1);
+	uint32_t mid = (low + hi) / 2;
+	double desired = (double)mid * thresholdSlider.getValue();
+	float slider_pos = (float)slider_idx * 0.10f + 0.10f;
+	addAndMakeVisible(thresholdSlider);
+	thresholdSlider.setSliderStyle(Slider::SliderStyle::LinearHorizontal);
+	thresholdSlider.setRange(0.0f, 22050.0f);
+	thresholdSlider.setSkewFactorFromMidPoint(2000.0f);
+	thresholdSlider.setValue(desired);
+	thresholdSlider.setBounds((int)((float)getWidth() * 0.05f), (int)(slider_pos * getHeight()),
+		(int)((float)getWidth() * 0.5f), (int)((float)getHeight() * 0.06125f));
+	thresholdSlider.setColour(Slider::ColourIds::thumbColourId, Colour::fromRGB(0, 0, 0));
+	thresholdSlider.setColour(Slider::ColourIds::trackColourId, Colour::fromRGB(255, 255, 255));
+	thresholdSlider.setTextBoxStyle(Slider::TextBoxBelow, false, 100, 25);
+	thresholdSlider.addListener(this);
+	// Setup label
+	uint32_t lower_bound = 55;
+	lower_bound <<= slider_idx;
+	uint32_t upper_bound = lower_bound << 1;
+	if (upper_bound > 22050)
+		upper_bound = 22050;
+	std::string label_str = std::to_string(lower_bound) + " - " + std::to_string(upper_bound) + " Hz";
+	addAndMakeVisible(thres_range);
+	thres_range.setFont(Font(18.0f, Font::italic));
+	thres_range.setText(label_str, dontSendNotification);
+	thres_range.setColour(Label::textColourId, Colours::whitesmoke);
+	thres_range.setJustificationType(Justification::topRight);
+	thres_range.setBounds((int)((float)getWidth() * 0.0f), (int)((slider_pos - 0.025f)* getHeight()),
+		(int)((float)getWidth() * 0.25f), (int)((float)getHeight() * 0.03f));
+	// Setup toggle box
+	addAndMakeVisible(toggle);
+	toggle.setBounds((int)((float)getWidth() * 0.05625f), (int)((slider_pos + 0.0125f)* getHeight()),
+		(int)((float)getWidth() * 0.05f), (int)((float)getHeight() * 0.05f));
+	toggle.addListener(this);
+
+}
+
+void ProjectAudioProcessorEditor::buttonClicked(Button * toggleButton)
+{
+	
+}
+
 void ProjectAudioProcessorEditor::sliderValueChanged(Slider *slider)
 {
 	///*This is where the slider changes the variable*/
-	//if (slider == &m_master_bin_shift)
-	//{
-	//	for (uint32_t i = 0; i < SLIDER_COUNT; i++)
-	//	{
-	//		if (m_freq_bin[i].toggle.getToggleState())
-	//		{
-	//			uint32_t low = 55 << i;
-	//			uint32_t hi = 55 << (i + 1);
-	//			if (hi > 22050)
-	//			{
-	//				hi = 22050;
-	//			}
-	//			uint32_t mid = (low + hi) / 2;
-	//			double desired = (double)mid * m_master_bin_shift.getValue();
-	//			m_freq_bin[i].slider.setValue(desired);
-	//			m_freq_bin[i].range.setValue(desired);
-	//		}
-	//	}
-	//}
+
+	if (slider == &thresholdSlider)
+	{
+		uint32_t high = thresholdSlider.getValue();
+		uint32_t low = 55 - thresholdSlider.getValue();
+		uint32_t mid = (low + high) / 2;
+		float desired = thresholdSlider.getValue();
+		thresholdSlider.setValue(desired);
+		std::string label_str = std::to_string(low) + " - " + std::to_string(high) + " dB";
+	}
 	//else
 	//{
 	//	for (uint32_t i = 0; i < SLIDER_COUNT; i++)
@@ -253,90 +257,3 @@ void ProjectAudioProcessorEditor::comboBoxChanged(ComboBox* comboBoxThatHasChang
 	}
 }
 
-void ProjectAudioProcessorEditor::SetupSoundTrack1(uint32_t slider_idx)
-{
-	//uint32_t low = 55 << slider_idx;
-	//uint32_t hi = 55 << (slider_idx + 1);
-	//uint32_t mid = (low + hi) / 2;
-	//double desired = (double)mid * m_master_bin_shift.getValue();
-	//float slider_pos = (float)slider_idx * 0.10f + 0.30f;
-	//addAndMakeVisible(m_freq_bin[slider_idx].slider);
-	//m_freq_bin[slider_idx].slider.setSliderStyle(Slider::SliderStyle::LinearHorizontal);
-	//m_freq_bin[slider_idx].slider.setRange(0.0f, 22050.0f);
-	//m_freq_bin[slider_idx].slider.setSkewFactorFromMidPoint(2000.0f);
-	//m_freq_bin[slider_idx].slider.setValue(desired);
-
-	//m_freq_bin[slider_idx].slider.setBounds((int)((float)getWidth() * 0.1f), (int)(slider_pos * getHeight()),
-	//	(int)((float)getWidth() * 0.25f), (int)((float)getHeight() * 0.06125f));
-
-	//m_master_bin_shift.setColour(Slider::ColourIds::thumbColourId, Colour::fromRGB(0, 0, 0));
-	//m_master_bin_shift.setColour(Slider::ColourIds::trackColourId, Colour::fromRGB(255, 255, 255));
-	//m_freq_bin[slider_idx].slider.setTextBoxStyle(Slider::TextBoxBelow, false, 100, 25);
-	//m_freq_bin[slider_idx].slider.addListener(this);
-	//// Setup label
-	//uint32_t lower_bound = 55;
-	//lower_bound <<= slider_idx;
-	//uint32_t upper_bound = lower_bound << 1;
-	//if (upper_bound > 22050)
-	//	upper_bound = 22050;
-	//std::string label_str = std::to_string(lower_bound) + " - " + std::to_string(upper_bound) + " Hz";
-	//addAndMakeVisible(m_freq_bin[slider_idx].label);
-	//m_freq_bin[slider_idx].label.setFont(Font(18.0f, Font::italic));
-	//m_freq_bin[slider_idx].label.setText(label_str, dontSendNotification);
-	//m_freq_bin[slider_idx].label.setColour(Label::textColourId, Colours::whitesmoke);
-	//m_freq_bin[slider_idx].label.setJustificationType(Justification::topRight);
-	//m_freq_bin[slider_idx].label.setBounds((int)((float)getWidth() * 0.0f), (int)((slider_pos - 0.025f)* getHeight()),
-	//	(int)((float)getWidth() * 0.25f), (int)((float)getHeight() * 0.03f));
-	//// Setup toggle box
-	//addAndMakeVisible(m_freq_bin[slider_idx].toggle);
-	//m_freq_bin[slider_idx].toggle.setBounds((int)((float)getWidth() * 0.05625f), (int)((slider_pos + 0.0125f)* getHeight()),
-	//	(int)((float)getWidth() * 0.05f), (int)((float)getHeight() * 0.05f));
-	//m_freq_bin[slider_idx].toggle.addListener(this);
-
-}
-
-void ProjectAudioProcessorEditor::SetupSoundTrack2(uint32_t slider_idx)
-{
-	//float slider_pos = (float)slider_idx * 0.10f + 0.30f;
-	//addAndMakeVisible(m_freq_bin[slider_idx].range);
-	//m_freq_bin[slider_idx].range.setSliderStyle(Slider::SliderStyle::LinearHorizontal);
-	//m_freq_bin[slider_idx].range.setRange(-2000.0f, 18100.0f);
-	//m_freq_bin[slider_idx].range.setSkewFactorFromMidPoint(0.0f);
-	//m_freq_bin[slider_idx].range.setValue(m_freq_bin[slider_idx].range.getMaximum());
-	//m_freq_bin[slider_idx].range.setBounds((int)((float)getWidth() * 0.6f), (int)(slider_pos * getHeight()),
-	//	(int)((float)getWidth() * 0.4f), (int)((float)getHeight() * 0.06125f));
-	//m_master_bin_shift.setColour(Slider::ColourIds::thumbColourId, Colour::fromRGB(0, 0, 0));
-	//m_master_bin_shift.setColour(Slider::ColourIds::trackColourId, Colour::fromRGB(255, 255, 255));
-	//m_freq_bin[slider_idx].range.setTextBoxStyle(Slider::TextBoxBelow, false, 100, 25);
-	//m_freq_bin[slider_idx].range.addListener(this);
-	//// Setup label
-	//int lower_bound = -2000;
-	//int upper_bound = 18100;
-	//std::string label_str = std::to_string(lower_bound) + " - " + std::to_string(upper_bound) + " Hz";
-	//addAndMakeVisible(m_freq_bin[slider_idx].range_label);
-	//m_freq_bin[slider_idx].range_label.setFont(Font(18.0f, Font::italic));
-	//m_freq_bin[slider_idx].range_label.setText(label_str, dontSendNotification);
-	//m_freq_bin[slider_idx].range_label.setColour(Label::textColourId, Colours::whitesmoke);
-	//m_freq_bin[slider_idx].range_label.setJustificationType(Justification::topRight);
-	//m_freq_bin[slider_idx].range_label.setBounds((int)((float)getWidth() * 0.55f), (int)((slider_pos - 0.025f)* getHeight()),
-	//	(int)((float)getWidth() * 0.25f), (int)((float)getHeight() * 0.03f));
-	//// Setup toggle box
-	//addAndMakeVisible(m_freq_bin[slider_idx].range_toggle);
-	//m_freq_bin[slider_idx].range_toggle.setBounds((int)((float)getWidth() * 0.6), (int)((slider_pos + 0.0125f)* getHeight()),
-	//	(int)((float)getWidth() * 0.05f), (int)((float)getHeight() * 0.05f));
-	//m_freq_bin[slider_idx].range_toggle.addListener(this);
-}
-//void ProjectAudioProcessorEditor::SetFrequencyBinVisibility(bool vis)
-//{
-//	m_set_all_bins.setVisible(vis);
-//	m_set_all_ranges.setVisible(vis);
-//	m_master_bin_shift.setVisible(vis);
-//	for (uint32_t i = 0; i < SLIDER_COUNT; i++)
-//	{
-//		m_freq_bin[i].label.setVisible(vis);
-//		m_freq_bin[i].toggle.setVisible(vis);
-//		m_freq_bin[i].slider.setVisible(vis);
-//		m_freq_bin[i].range.setVisible(vis);//		m_freq_bin[i].range_label.setVisible(vis);
-//		m_freq_bin[i].range_toggle.setVisible(vis);
-//	}
-//}

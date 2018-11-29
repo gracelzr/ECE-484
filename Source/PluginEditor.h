@@ -16,7 +16,7 @@ It contains the basic framework code for a JUCE plugin editor.
 //==============================================================================
 /**
 */
-class ProjectAudioProcessorEditor : public AudioProcessorEditor, public Slider::Listener, public ComboBox::Listener
+class ProjectAudioProcessorEditor : public AudioProcessorEditor, public Slider::Listener, public ComboBox::Listener, public ToggleButton::Listener
 {
 public:
 	ProjectAudioProcessorEditor(ProjectAudioProcessor&);
@@ -28,9 +28,8 @@ public:
 	void PhaseVocoderChanged();
 	void sliderValueChanged(Slider *slider) override;
 	void comboBoxChanged(ComboBox *comboBox) override;
-	void SetupSoundTrack1(uint32_t slider_idx);
-	void SetupSoundTrack2(uint32_t slider_idx);
-
+	void buttonClicked(Button *toggleButton) override;
+	void SetupSlider(uint32_t slider_idx);
 	ScopedPointer <AudioProcessorValueTreeState::SliderAttachment> sliderAttach;
 
 private:
@@ -48,6 +47,7 @@ private:
 	ComboBox phase_mode;
 	Slider thresholdSlider;
 	Label thres_range;
+	ToggleButton toggle;
 
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ProjectAudioProcessorEditor)
