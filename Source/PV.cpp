@@ -49,6 +49,7 @@ void PhaseVocoder::changePhaseMode(int phase_mode)
 void PhaseVocoder::getThreshold(int thre_input)
 {
 	thresh = thre_input;
+	//std::string label_str = std::to_string(thresh) + " dB";
 
 }
 

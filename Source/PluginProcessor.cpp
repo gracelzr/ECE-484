@@ -188,8 +188,9 @@ void ProjectAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer&
 	auto* indata = inbuf.getReadPointer(0);
 	auto* indata2 = buffer.getReadPointer(1);
 	auto* outdata = buffer.getWritePointer(0);
-	PV(25, 2, 1, numSample, numSample, 2048, 4, 44100, indata, indata2, outdata);
+	//PV(25, 2, 1, numSample, numSample, 2048, 4, 44100, indata, indata2, outdata);
 	// ..do something to the data...
+	pv->passParameters(numSample, numSample, fftFrameSize, osamp, SAMPLE_RATE, indata, indata2, outdata);
 
 }
 

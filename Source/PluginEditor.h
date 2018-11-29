@@ -29,7 +29,7 @@ public:
 	void sliderValueChanged(Slider *slider) override;
 	void comboBoxChanged(ComboBox *comboBox) override;
 	void buttonClicked(Button *toggleButton) override;
-	void SetupSlider(uint32_t slider_idx);
+	//void SetupSlider(uint32_t slider_idx);
 	ScopedPointer <AudioProcessorValueTreeState::SliderAttachment> sliderAttach;
 
 private:
