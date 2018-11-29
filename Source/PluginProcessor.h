@@ -36,7 +36,7 @@ public:
 	PhaseVocoder * pv;
 	dsp::ProcessorDuplicator<dsp::IIR::Filter< float >, dsp::IIR::Coefficients< float >> lowpass;
 	void dsp_process(dsp::ProcessContextReplacing<float>);
-	void update();
+	//void update();
 
 #ifndef JucePlugin_PreferredChannelConfigurations
 	bool isBusesLayoutSupported(const BusesLayout& layouts) const override;

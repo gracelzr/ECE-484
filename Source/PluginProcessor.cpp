@@ -152,12 +152,6 @@ void ProjectAudioProcessor::dsp_process(dsp::ProcessContextReplacing<float> cont
 	(void)context;
 }
 
-void ProjectAudioProcessor::update()
-{
-
-
-}
-
 void ProjectAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
 	ScopedNoDenormals noDenormals;

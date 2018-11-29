@@ -40,7 +40,7 @@ ProjectAudioProcessorEditor::ProjectAudioProcessorEditor(ProjectAudioProcessor& 
 	phase_mode.addItem("Keep Phase 1", 1);
 	phase_mode.addItem("Keep Phase 2", 2);
 	phase_mode.addItem("Add Both Phase", 3);
-	phase_mode.addItem("Multiply Both Phase", 4);
+	//phase_mode.addItem("Multiply Both Phase", 4);
 	phase_mode.addListener(this);
 	phase_mode.setSelectedId(1);
 	phase_mode.setBounds((int)(0.4f * getWidth()), (int)(0.04f*getHeight()), (int)(getWidth()*0.3f), 20);
@@ -140,7 +140,7 @@ void ProjectAudioProcessorEditor::sliderValueChanged(Slider *slider)
 		//uint32_t low = 55 - thresholdSlider.getValue();
 		//uint32_t mid = (low + high) / 2;
 		desired = thresholdSlider.getValue();
-		thresholdSlider.setValue(desired);
+		//thresholdSlider.setValue(desired);
 		pv->getThreshold(desired);
 		std::string label_str = std::to_string(desired) + " dB";
 	}
@@ -198,25 +198,28 @@ void ProjectAudioProcessorEditor::comboBoxChanged(ComboBox* comboBoxThatHasChang
 		switch (phase_mode.getSelectedId())
 		{
 		case 1:
+			pv->changePhaseMode(0);
 			thresholdSlider.setVisible(false);
 			thres_range.setVisible(false);
 			toggle.setVisible(false);
 			break;
 		case 2:
+			pv->changePhaseMode(1);
 			thresholdSlider.setVisible(false);
 			thres_range.setVisible(false);
 			toggle.setVisible(false);
 			break;
 		case 3:
+			pv->changePhaseMode(2);
 			thresholdSlider.setVisible(false);
 			thres_range.setVisible(false);
 			toggle.setVisible(false);
 			break;
-		case 4:
+		/*case 4:
 			thresholdSlider.setVisible(false);
 			thres_range.setVisible(false);
 			toggle.setVisible(false);
-			break;
+			break;*/
 		}
 	}
 }
