@@ -15,8 +15,8 @@ It contains the basic framework code for a JUCE plugin processor.
 extern "C" {
 #include "PV_core.h"
 }
-#define fftFrameSize 2048
-#define osamp 4
+#define fftFrameSize 1024
+#define osamp 5
 #define SAMPLE_RATE 44100.0f
 
 //==============================================================================

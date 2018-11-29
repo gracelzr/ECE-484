@@ -25,12 +25,7 @@ int thresh;
 
 PhaseVocoder::PhaseVocoder()
 {
-	//smbFft(float *fftBuffer, long fftFrameSize, long sign);
-	//PV(float thresh, int MAGMODE, int PHASEMODE, long numSampsToProcess, long numSamps2, 
-	//	long fftFrameSize, long osamp, float sampleRate, float *indata, float *indata2, float *outdata);
-
 }
-
 
 PhaseVocoder::~PhaseVocoder()
 {
@@ -49,8 +44,6 @@ void PhaseVocoder::changePhaseMode(int phase_mode)
 void PhaseVocoder::getThreshold(int thre_input)
 {
 	thresh = thre_input;
-	//std::string label_str = std::to_string(thresh) + " dB";
-
 }
 
 void PhaseVocoder::passParameters(long numSampsToProcess, long numSamps2, long fftFrameSize, long osamp, float sampleRate, const float *indata, const float *indata2, float *outdata)
