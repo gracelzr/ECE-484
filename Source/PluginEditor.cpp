@@ -20,11 +20,12 @@ ProjectAudioProcessorEditor::ProjectAudioProcessorEditor(ProjectAudioProcessor& 
 	// Make sure that before the constructor has finished, you've set the
 	// editor's size to whatever you need it to be.
 	setSize(500, 300);
-	for (uint32_t i = 0; i < SLIDER_COUNT; i++)
+	for (uint32_t i = 0; i < 1; i++)
 	{
 		SetupSoundTrack1(i);
 		SetupSoundTrack2(i);
 	}
+	pv = new PhaseVocoder();
 	/*addAndMakeVisible(m_master_bin_shift);
 	m_master_bin_shift.setSliderStyle(Slider::SliderStyle::LinearHorizontal);
 	m_master_bin_shift.setRange(0.1f, 10.0f);
@@ -61,8 +62,7 @@ ProjectAudioProcessorEditor::ProjectAudioProcessorEditor(ProjectAudioProcessor& 
 	magnitude_mode.addItem("Keep Magnitude 2", 2);
 	magnitude_mode.addItem("Add Both Magnitudes", 3);
 	magnitude_mode.addItem("Multiply Both Magnitudes", 4);
-	magnitude_mode.addItem("Mask Sound Track 1", 5);
-	magnitude_mode.addItem("Mask Sound Track 2", 6);
+	magnitude_mode.addItem("Mask Sound Track", 5);
 	magnitude_mode.addListener(this);
 	magnitude_mode.setSelectedId(1);
 	magnitude_mode.setBounds((int)(0.05f * getWidth()), (int)(0.04f*getHeight()), (int)(getWidth()*0.3f), 20);
@@ -186,52 +186,30 @@ void ProjectAudioProcessorEditor::comboBoxChanged(ComboBox* comboBoxThatHasChang
 		switch (magnitude_mode.getSelectedId())
 		{
 		case 1:
-			//PhaseVocoder::change_type(ProcessType::Robotization);
+			//keep mag1
+			pv->changeMagMode(0);
 			thresholdSlider.setVisible(false);
-			/*SetFrequencyBinVisibility(false);
-			m_pitch_shift.setVisible(false);
-			m_set_all_ranges.setToggleState(false, NotificationType::sendNotification);
-			m_set_all_bins.setToggleState(false, NotificationType::sendNotification);*/
+
 			break;
 		case 2:
-			//PhaseVocoder::change_type(ProcessType::Whisperization);
+			//keep mag2
+			pv->changeMagMode(1);
 			thresholdSlider.setVisible(false);
-			/*SetFrequencyBinVisibility(false);
-			m_pitch_shift.setVisible(false);
-			m_set_all_ranges.setToggleState(false, NotificationType::sendNotification);
-			m_set_all_bins.setToggleState(false, NotificationType::sendNotification);*/
 			break;
 		case 3:
-			//PhaseVocoder::change_type(ProcessType::PitchShift);
+			//add mag1 and mag2
+			pv->changeMagMode(2);
 			thresholdSlider.setVisible(false);
-			/*SetFrequencyBinVisibility(false);
-			m_pitch_shift.setVisible(true);
-			m_set_all_ranges.setToggleState(false, NotificationType::sendNotification);
-			m_set_all_bins.setToggleState(false, NotificationType::sendNotification);*/
 			break;
 		case 4:
-			//PhaseVocoder::change_type(ProcessType::Phaser);
-			thresholdSlider.setVisible(true);
-			/*SetFrequencyBinVisibility(false);
-			m_pitch_shift.setVisible(false);
-			m_set_all_ranges.setToggleState(false, NotificationType::sendNotification);
-			m_set_all_bins.setToggleState(false, NotificationType::sendNotification);*/
+			//multiply mag1 and mag2
+			pv->changeMagMode(3);
+			thresholdSlider.setVisible(false);
 			break;
 		case 5:
-			//PhaseVocoder::change_type(ProcessType::NoneDebug);
+			//mask
+			pv->changeMagMode(4);
 			thresholdSlider.setVisible(true);
-		/*	SetFrequencyBinVisibility(false);
-			m_pitch_shift.setVisible(false);
-			m_set_all_ranges.setToggleState(false, NotificationType::sendNotification);
-			m_set_all_bins.setToggleState(false, NotificationType::sendNotification);*/
-			break;
-		case 6:
-			//PhaseVocoder::change_type(ProcessType::BinShift);
-			thresholdSlider.setVisible(true);
-		/*	SetFrequencyBinVisibility(true);
-			m_pitch_shift.setVisible(false);
-			m_set_all_ranges.setToggleState(true, NotificationType::sendNotification);
-			m_set_all_bins.setToggleState(true, NotificationType::sendNotification);*/
 			break;
 		}
 	}
