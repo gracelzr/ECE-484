@@ -19,6 +19,7 @@ ProjectAudioProcessor::ProjectAudioProcessor()
 #if ! JucePlugin_IsMidiEffect
 #if ! JucePlugin_IsSynth
 		.withInput("Input", AudioChannelSet::stereo(), true)
+		//.withInput("Input1", AudioChannelSet::stereo(), true)
 #endif
 		.withOutput("Output", AudioChannelSet::mono(), true)
 #endif
@@ -151,10 +152,8 @@ void ProjectAudioProcessor::dsp_process(dsp::ProcessContextReplacing<float> cont
 {
 	(void)context;
 }
-
 void ProjectAudioProcessor::update()
 {
-
 
 }
 
@@ -182,15 +181,22 @@ void ProjectAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer&
 	// interleaved by keeping the same state.
 	auto numSample = buffer.getNumSamples();
 
-	AudioBuffer<float> inbuf(1, numSample);
+	AudioBuffer<float> inbuf(2, numSample);
 
 	inbuf.copyFrom(0, 0, buffer.getReadPointer(0), numSample);
-	auto* indata = inbuf.getReadPointer(0);
-	auto* indata2 = buffer.getReadPointer(1);
+	inbuf.copyFrom(1, 0, buffer.getReadPointer(1), numSample);
+
+	auto* indata = inbuf.getReadPointer(0);	
+	auto* indata1 = inbuf.getReadPointer(1);
+	
 	auto* outdata = buffer.getWritePointer(0);
+	auto* outdata1 = buffer.getWritePointer(1);
+
 	//PV(25, 2, 1, numSample, numSample, 2048, 4, 44100, indata, indata2, outdata);
 	// ..do something to the data...
-	pv->passParameters(numSample, numSample, fftFrameSize, osamp, SAMPLE_RATE, indata, indata2, outdata);
+	pv->passParameters(numSample, numSample, fftFrameSize, osamp, SAMPLE_RATE, indata, indata1, outdata);
+	//pv->passParameters(numSample, numSample, fftFrameSize, osamp, SAMPLE_RATE, indata, buffer.getReadPointer(2), outdata);
+	//pv->passParameters(numSample, numSample, fftFrameSize, osamp, SAMPLE_RATE, indata1, buffer.getReadPointer(3), outdata1);
 
 }
 

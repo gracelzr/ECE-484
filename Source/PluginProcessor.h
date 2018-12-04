@@ -15,7 +15,7 @@ It contains the basic framework code for a JUCE plugin processor.
 extern "C" {
 #include "PV_core.h"
 }
-#define fftFrameSize 2048
+#define fftFrameSize 1024
 #define osamp 4
 #define SAMPLE_RATE 44100.0f
 
@@ -67,7 +67,6 @@ public:
 	void getStateInformation(MemoryBlock& destData) override;
 	void setStateInformation(const void* data, int sizeInBytes) override;
 	AudioProcessorValueTreeState valueTreeState;
-	//static void DSPThread(float* input, float* output, uint32_t buffer_size, uint32 channel, void* pv);
 private:
 	//==============================================================================
 

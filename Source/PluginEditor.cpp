@@ -85,45 +85,6 @@ void ProjectAudioProcessorEditor::PhaseVocoderChanged()
 
 }
 
-//void ProjectAudioProcessorEditor::SetupSlider(uint32_t slider_idx)
-//{
-//	uint32_t low = 55 << slider_idx;
-//	uint32_t hi = 55 << (slider_idx + 1);
-//	uint32_t mid = (low + hi) / 2;
-//	double desired = (double)mid * thresholdSlider.getValue();
-//	float slider_pos = (float)slider_idx * 0.10f + 0.10f;
-//	addAndMakeVisible(thresholdSlider);
-//	thresholdSlider.setSliderStyle(Slider::SliderStyle::LinearHorizontal);
-//	thresholdSlider.setRange(0.0f, 22050.0f);
-//	thresholdSlider.setSkewFactorFromMidPoint(2000.0f);
-//	thresholdSlider.setValue(desired);
-//	thresholdSlider.setBounds((int)((float)getWidth() * 0.05f), (int)(slider_pos * getHeight()),
-//		(int)((float)getWidth() * 0.5f), (int)((float)getHeight() * 0.06125f));
-//	thresholdSlider.setColour(Slider::ColourIds::thumbColourId, Colour::fromRGB(0, 0, 0));
-//	thresholdSlider.setColour(Slider::ColourIds::trackColourId, Colour::fromRGB(255, 255, 255));
-//	thresholdSlider.setTextBoxStyle(Slider::TextBoxBelow, false, 100, 25);
-//	thresholdSlider.addListener(this);
-//	// Setup label
-//	uint32_t lower_bound = 55;
-//	lower_bound <<= slider_idx;
-//	uint32_t upper_bound = lower_bound << 1;
-//	if (upper_bound > 22050)
-//		upper_bound = 22050;
-//	std::string label_str = std::to_string(lower_bound) + " - " + std::to_string(upper_bound) + " Hz";
-//	addAndMakeVisible(thres_range);
-//	thres_range.setFont(Font(18.0f, Font::italic));
-//	thres_range.setText(label_str, dontSendNotification);
-//	thres_range.setColour(Label::textColourId, Colours::whitesmoke);
-//	thres_range.setJustificationType(Justification::topRight);
-//	thres_range.setBounds((int)((float)getWidth() * 0.0f), (int)((slider_pos - 0.025f)* getHeight()),
-//		(int)((float)getWidth() * 0.25f), (int)((float)getHeight() * 0.03f));
-//	// Setup toggle box
-//	addAndMakeVisible(toggle);
-//	toggle.setBounds((int)((float)getWidth() * 0.05625f), (int)((slider_pos + 0.0125f)* getHeight()),
-//		(int)((float)getWidth() * 0.05f), (int)((float)getHeight() * 0.05f));
-//	toggle.addListener(this);
-//
-//}
 
 void ProjectAudioProcessorEditor::buttonClicked(Button * toggleButton)
 {
