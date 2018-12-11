@@ -5,6 +5,20 @@ PV.cpp
 Created: 26 Nov 2018 1:51:16pm
 Author:  grace
 
+Note: "processAudioChunck" function partially adopted from the following project
+*
+* NAME: smbPitchShift.cpp
+* VERSION: 1.2
+* HOME URL: http://blogs.zynaptiq.com/bernsee
+* COPYRIGHT 1999-2015 Stephan M. Bernsee <s.bernsee [AT] zynaptiq [DOT] com>
+*
+*                                                 The Wide Open License (WOL)
+*
+* Permission to use, copy, modify, distribute and sell this software and its
+* documentation for any purpose is hereby granted without fee, provided that
+* the above copyright notice and this license appear in all source copies.
+* THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY OF
+* ANY KIND. See http://www.dspguru.com/wol.htm for more information.
 ==============================================================================
 */
 

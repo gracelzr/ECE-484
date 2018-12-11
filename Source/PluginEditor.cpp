@@ -11,8 +11,6 @@ It contains the basic framework code for a JUCE plugin editor.
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-float desired;
-
 //==============================================================================
 ProjectAudioProcessorEditor::ProjectAudioProcessorEditor(ProjectAudioProcessor& p)
 	: AudioProcessorEditor(&p), processor(p)
@@ -21,44 +19,52 @@ ProjectAudioProcessorEditor::ProjectAudioProcessorEditor(ProjectAudioProcessor& 
 	// editor's size to whatever you need it to be.
 	setSize(400, 300);
 
-	pv = new PhaseVocoderChannel();
-
-
-	//combobox Magniude
+	// Combobox Magnitude
 	addAndMakeVisible(magnitude_mode);
-	magnitude_mode.addItem("Keep Magnitude 1", 1);
-	magnitude_mode.addItem("Keep Magnitude 2", 2);
-	magnitude_mode.addItem("Add Both Magnitudes", 3);
-	magnitude_mode.addItem("Multiply Both Magnitudes", 4);
-	magnitude_mode.addItem("Mask Sound Track", 5);
+	magnitude_mode.addItemList(
+		{
+			"Keep Magnitude 1",
+			"Keep Magnitude 2" ,
+			"Add Both Magnitudes",
+			"Multiply Both Magnitudes",
+			"Mask Sound Track"
+		}
+	, 1);
 	magnitude_mode.addListener(this);
 	magnitude_mode.setSelectedId(1);
-	magnitude_mode.setBounds((int)(0.05f * getWidth()), (int)(0.04f*getHeight()), (int)(getWidth()*0.3f), 20);
+	magnitude_mode.setBounds((int)(0.05f * getWidth()), (int)(0.04f*getHeight()), (int)(getWidth()*0.4f), 20);
 
-	//combobox Phase
+	// Combobox Phase
 	addAndMakeVisible(phase_mode);
-	phase_mode.addItem("Keep Phase 1", 1);
-	phase_mode.addItem("Keep Phase 2", 2);
-	phase_mode.addItem("Add Both Phase", 3);
-	//phase_mode.addItem("Multiply Both Phase", 4);
+	phase_mode.addItemList(
+		{
+			"Keep Phase 1",
+			"Keep Phase 2",
+			"Add Both Phase"
+		}
+	, 1);
 	phase_mode.addListener(this);
 	phase_mode.setSelectedId(1);
-	phase_mode.setBounds((int)(0.4f * getWidth()), (int)(0.04f*getHeight()), (int)(getWidth()*0.3f), 20);
+	phase_mode.setBounds((int)(0.5f * getWidth()), (int)(0.04f*getHeight()), (int)(getWidth()*0.4f), 20);
 
-	//slider initialization
+	// Slider initialization
 	sliderAttach = new AudioProcessorValueTreeState::SliderAttachment(processor.valueTreeState, "Threshold", thresholdSlider);
 	addAndMakeVisible(thresholdSlider);
 	thresholdSlider.setSliderStyle(Slider::SliderStyle::LinearHorizontal);
 	thresholdSlider.setTextBoxStyle(Slider::TextBoxAbove, true, 100, 25);
+	thresholdSlider.setTextValueSuffix(" db");
 	thresholdSlider.setRange(-50.0f, 50.0f);
 	thresholdSlider.setValue(100);
 	thresholdSlider.setColour(Slider::ColourIds::thumbColourId, Colour::fromRGB(150, 0, 175));
 	thresholdSlider.setColour(Slider::ColourIds::trackColourId, Colour::fromRGB(100, 0, 125));
 	thresholdSlider.addListener(this);
-	thresholdSlider.setBounds((int)((float)getWidth() * 0.1f), (int)(0.2 * getHeight()),
+	thresholdSlider.setBounds((int)((float)getWidth() * 0.3f), (int)(0.2 * getHeight()),
 		(int)((float)getWidth() * 0.5f), (int)((float)getHeight() * 0.2f));
-
-	setSize(400, 300);
+	// Add a label around slider
+	addAndMakeVisible(thresholdLabel);
+	thresholdSlider.addChildAndSetID(&thresholdLabel, "Threshold Label");
+	thresholdLabel.setText("Mask Threshold", dontSendNotification);
+	thresholdLabel.attachToComponent(&thresholdSlider, true);
 }
 
 ProjectAudioProcessorEditor::~ProjectAudioProcessorEditor()
@@ -100,90 +106,26 @@ void ProjectAudioProcessorEditor::sliderValueChanged(Slider *slider)
 
 	if (slider == &thresholdSlider)
 	{
-		//uint32_t high = thresholdSlider.getValue();
-		//uint32_t low = 55 - thresholdSlider.getValue();
-		//uint32_t mid = (low + high) / 2;
-		desired = thresholdSlider.getValue();
-		//thresholdSlider.setValue(desired);
-		pv->setThreshold(desired);
+		target_val = thresholdSlider.getValue();
+		PhaseVocoderChannel::setThreshold(target_val);
 	}
 }
 
 
-
 void ProjectAudioProcessorEditor::comboBoxChanged(ComboBox* comboBoxThatHasChanged)
 {
+	auto selected_id = magnitude_mode.getSelectedId();
+
 	/*This is where the slider changes the variable*/
 	if (comboBoxThatHasChanged == &magnitude_mode) {
-		std::cout << thresholdSlider.getValue() << std::endl;
-		switch (magnitude_mode.getSelectedId())
-		{
-		case 1:
-			//keep mag1
-			pv->setMagMode(0);
-			thresholdSlider.setVisible(false);
-			thres_range.setVisible(false);
-			toggle.setVisible(false);
-
-			break;
-		case 2:
-			//keep mag2
-			pv->setMagMode(1);
-			thresholdSlider.setVisible(false);
-			thres_range.setVisible(false);
-			toggle.setVisible(false);
-			break;
-		case 3:
-			//add mag1 and mag2
-			pv->setMagMode(2);
-			thresholdSlider.setVisible(false);
-			thres_range.setVisible(false);
-			toggle.setVisible(false);
-			break;
-		case 4:
-			//multiply mag1 and mag2
-			pv->setMagMode(3);
-			thresholdSlider.setVisible(false);
-			thres_range.setVisible(false);
-			toggle.setVisible(false);
-			break;
-		case 5:
-			//mask
-			pv->setMagMode(4);
-			thresholdSlider.setVisible(true);
-			thres_range.setVisible(true);
-			toggle.setVisible(true);
-			std::string label_str = std::to_string(desired) + " dB";
-			break;
-		}
+		// 1: Keep mag1 2: Keep mag2 3: Add mag1 and mag2
+		// 4: Multiply mag1 and mag2 5: Mask
+		PhaseVocoderChannel::setMagMode(selected_id - 1);
+		// Show the threshold sliders when Mask mode selected
+		thresholdSlider.setVisible(selected_id == 5);
 	}
-	if (comboBoxThatHasChanged == &phase_mode) {
-		switch (phase_mode.getSelectedId())
-		{
-		case 1:
-			pv->setPhaseMode(0);
-			thresholdSlider.setVisible(false);
-			thres_range.setVisible(false);
-			toggle.setVisible(false);
-			break;
-		case 2:
-			pv->setPhaseMode(1);
-			thresholdSlider.setVisible(false);
-			thres_range.setVisible(false);
-			toggle.setVisible(false);
-			break;
-		case 3:
-			pv->setPhaseMode(2);
-			thresholdSlider.setVisible(false);
-			thres_range.setVisible(false);
-			toggle.setVisible(false);
-			break;
-		/*case 4:
-			thresholdSlider.setVisible(false);
-			thres_range.setVisible(false);
-			toggle.setVisible(false);
-			break;*/
-		}
+	else if (comboBoxThatHasChanged == &phase_mode) {
+		PhaseVocoderChannel::setPhaseMode(selected_id - 1);
 	}
 }
 

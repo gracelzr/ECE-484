@@ -21,7 +21,6 @@ class ProjectAudioProcessorEditor : public AudioProcessorEditor, public Slider::
 public:
 	ProjectAudioProcessorEditor(ProjectAudioProcessor&);
 	~ProjectAudioProcessorEditor();
-	PhaseVocoderChannel * pv;
 	//==============================================================================
 	void paint(Graphics&) override;
 	void resized() override;
@@ -41,14 +40,13 @@ private:
 	const int m_vertical_top_padding = 20;
 	const int m_vertical_bottom_padding = 50;
 	const float m_font_title_size = 40.0f;
+	float target_val;
 	// JUCE Tutorial -- Slider
 
 	ComboBox magnitude_mode;
 	ComboBox phase_mode;
 	Slider thresholdSlider;
-	Label thres_range;
-	ToggleButton toggle;
-
+	Label thresholdLabel;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ProjectAudioProcessorEditor)
 };
