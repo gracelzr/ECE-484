@@ -27,18 +27,23 @@ ProjectAudioProcessor::ProjectAudioProcessor()
 #endif
 {
 	PhaseVocoderChannel::initParams(0, 0, 0, FFT_FRAME_SIZE, OSAMP);
-	pv = new PhaseVocoderChannel();
-	pv2 = new PhaseVocoderChannel();
+	pvc = (PhaseVocoderChannel**) malloc(sizeof(PhaseVocoderChannel*) * 2);
+	pvc[0] = new PhaseVocoderChannel();
+	pvc[1] = new PhaseVocoderChannel();
 }
 
 
 ProjectAudioProcessor::~ProjectAudioProcessor()
 {
-	if (pv)
+	for (int i = 0; i < 2; i++)
 	{
-		delete pv;
-		pv = NULL;
+		if (pvc[i])
+		{
+			delete pvc[i];
+			pvc[i] = NULL;
+		}
 	}
+	free(pvc);
 }
 
 //==============================================================================
@@ -135,14 +140,17 @@ bool ProjectAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) c
 	return true;
 #else
 	// This is the place where you check if the layout is supported.
-	// In this template code we only support mono or stereo.
+	// In this template code we only support stereo for the main bus.
+	if (layouts.getMainInputChannelSet() != AudioChannelSet::stereo())
+		return false;
+	// If the second bus is enabled, it has to be stereo
+	if (!layouts.getChannelSet(true, 1).isDisabled() && layouts.getChannelSet(true, 1) != AudioChannelSet::stereo())
+		return false;
+
+#if ! JucePlugin_IsSynth
 	if (layouts.getMainOutputChannelSet() != AudioChannelSet::stereo())
 		return false;
 
-	// This checks if the input layout matches the output layout
-#if ! JucePlugin_IsSynth
-	if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
-		return false;
 #endif
 
 	return true;
@@ -186,16 +194,23 @@ void ProjectAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer&
 	// ..do something to the data...
 
 	AudioBuffer<float> outbuf(2, numSample);
-	
-	//pv->processAudioChunk(numSample, numSample, FFT_FRAME_SIZE, OSAMP, SAMPLE_RATE, buffer.getReadPointer(0), buffer.getReadPointer(2), outbuf.getWritePointer(0));
-	//pv->processAudioChunk2(numSample, numSample, FFT_FRAME_SIZE, OSAMP, SAMPLE_RATE, buffer.getReadPointer(1), buffer.getReadPointer(3), outbuf.getWritePointer(1));
 
 	PhaseVocoderChannel::setRuntimeParams(numSample, sampleRate);
-	pv->processAudioChunk(buffer.getReadPointer(0), buffer.getReadPointer(2), outbuf.getWritePointer(0));
-	pv2->processAudioChunk( buffer.getReadPointer(0), buffer.getReadPointer(2), outbuf.getWritePointer(1));
 
-	buffer.copyFrom(0, 0, outbuf.getReadPointer(0), numSample);
-	buffer.copyFrom(1, 0, outbuf.getReadPointer(1), numSample);
+	if (getBus(true, 1)->isEnabled()) {
+		// When both inputs are stereo
+		pvc[0]->processAudioChunk(buffer.getReadPointer(0), buffer.getReadPointer(2), outbuf.getWritePointer(0));
+		pvc[1]->processAudioChunk(buffer.getReadPointer(1), buffer.getReadPointer(3), outbuf.getWritePointer(1));
+		buffer.copyFrom(0, 0, outbuf.getReadPointer(0), numSample);
+		buffer.copyFrom(1, 0, outbuf.getReadPointer(1), numSample);
+	}
+	else {
+		// When both inputs are mono
+		pvc[0]->processAudioChunk(buffer.getReadPointer(0), buffer.getReadPointer(1), outbuf.getWritePointer(0));
+		buffer.copyFrom(0, 0, outbuf.getReadPointer(0), numSample);
+		// Copy the same content to the second channel
+		buffer.copyFrom(1, 0, outbuf.getReadPointer(0), numSample);
+	}
 }
 
 //==============================================================================

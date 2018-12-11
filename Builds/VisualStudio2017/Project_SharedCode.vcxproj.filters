@@ -2424,9 +2424,6 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_video.cpp">
       <Filter>JUCE Library Code</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\PV_core.c">
-      <Filter>Project\Source</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\PV.h">
@@ -4813,9 +4810,6 @@
     </ClInclude>
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h">
       <Filter>JUCE Library Code</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\PV_core.h">
-      <Filter>Project\Source</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

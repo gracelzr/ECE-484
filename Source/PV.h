@@ -10,9 +10,8 @@ Author:  grace
 
 #pragma once
 #include "../JuceLibraryCode/JuceHeader.h"
-extern "C" {
-#include "PV_core.h"
-}
+
+#define MAX_FRAME_LENGTH 8192
 
 class PhaseVocoderChannel
 {
@@ -31,7 +30,6 @@ public:
 	static void setRuntimeParams(long sample_to_process, float sample_rate);
 
 	void processAudioChunk(const float * indata, const float * indata2, float * outdata);
-	void processAudioChunk2(const float * indata, const float * indata2, float * outdata);
 
 private:
 	static uint8_t magMode;

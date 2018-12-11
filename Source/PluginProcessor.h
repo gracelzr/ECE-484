@@ -12,9 +12,7 @@ It contains the basic framework code for a JUCE plugin processor.
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PV.h"
-extern "C" {
-#include "PV_core.h"
-}
+
 #define FFT_FRAME_SIZE 1024
 #define OSAMP 4
 //#define SAMPLE_RATE 44100.0f
@@ -33,8 +31,7 @@ public:
 	void prepareToPlay(double sampleRate, int samplesPerBlock) override;
 	void releaseResources() override;
 
-	PhaseVocoderChannel * pv;
-	PhaseVocoderChannel * pv2;
+	PhaseVocoderChannel ** pvc;
 	dsp::ProcessorDuplicator<dsp::IIR::Filter< float >, dsp::IIR::Coefficients< float >> lowpass;
 	void dsp_process(dsp::ProcessContextReplacing<float>);
 	void update();

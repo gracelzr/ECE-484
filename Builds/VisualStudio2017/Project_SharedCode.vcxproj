@@ -2033,7 +2033,6 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_gui_extra.cpp" />
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_opengl.cpp" />
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_video.cpp" />
-    <ClCompile Include="..\..\Source\PV_core.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\PV.h" />
@@ -2831,7 +2830,6 @@
     <ClInclude Include="..\..\..\juce-5.4.1-windows\JUCE\modules\juce_video\juce_video.h" />
     <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h" />
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h" />
-    <ClInclude Include="..\..\Source\PV_core.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\juce-5.4.1-windows\JUCE\modules\juce_audio_formats\codecs\flac\Flac Licence.txt" />

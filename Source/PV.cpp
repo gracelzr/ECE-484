@@ -25,13 +25,6 @@ Note: "processAudioChunck" function partially adopted from the following project
 #include "PV.h"
 #define _USE_MATH_DEFINES
 #include <math.h>
-#include <ctime>
-#include <iostream>
-#include <bitset>
-#include <chrono>
-#include <math.h>
-#include <fstream>
-#include <iomanip>
 
 uint8_t PhaseVocoderChannel::magMode;
 uint8_t PhaseVocoderChannel::phaseMode;
@@ -109,8 +102,6 @@ void PhaseVocoderChannel::setRuntimeParams(long sample_to_process, float sample_
 
 void PhaseVocoderChannel::processAudioChunk(const float *indata, const float *indata2, float *outdata)
 {
-	//PV(thresh, magMode, phaseMode, numSampsToProcess, numSampsToProcess, fftFrameSize, osamp, sampleRate, indata, indata2, outdata);
-
 	double magn, phase, magn2, phase2, tmp, tmp2, window, real, imag, real2, imag2;
 	double freqPerBin, expct;
 	long i, k, j = 0, qpd, qpd2, index, inFifoLatency, stepSize, fftFrameSize2;
@@ -129,7 +120,9 @@ void PhaseVocoderChannel::processAudioChunk(const float *indata, const float *in
 	for (i = 0; i < numSampsToProcess; i++) {
 		/* As long as we have not yet collected enough data just read in */
 		gInFIFO[gRover] = indata[i];
-		//If the second sound is shorter than the main sound, loop it
+		// If the second sound is shorter than the main sound, loop it
+		// However, since now we get audio stream from DirectX,
+		// this is unlikely to happen
 		//if (j >= numSamps2) {
 		//	j = 0;
 		//}
@@ -218,55 +211,47 @@ void PhaseVocoderChannel::processAudioChunk(const float *indata, const float *in
 			}
 
 			/* ***************** PROCESSING ******************* */
-			/* this does the actual pitch shifting */
+			/* this does the actual processing */
 			memset(gSynMagn, 0, fftFrameSize * sizeof(float));
 			memset(gSynFreq, 0, fftFrameSize * sizeof(float));
 			for (k = 0; k <= fftFrameSize2; k++) {
-				//original code
-				/*index = k*pitchShift;
-				if (index <= fftFrameSize2) {
-				gSynMagn[index] += gAnaMagn[k];
-				gSynFreq[index] = gAnaFreq[k] * pitchShift;
-				} */
-
-				//new code
-				if (magMode == 2) {
-					//Add Magnitudes
-					gSynMagn[k] = gAnaMagn[k] + gAnaMagn2[k];
-				}
-				else if (magMode == 3) {
-					//Multiply Magnitudes
-					gSynMagn[k] = gAnaMagn[k] * gAnaMagn2[k];
-				}
-				else if (magMode == 4) {
-					//Mask original magnitude with second magnitude if less than thresh
-					if (gAnaMagn[k] < thresh) {
-						gSynMagn[k] = gAnaMagn2[k];
-					}
-					else {
-						gSynMagn[k] = gAnaMagn[k];
-					}
-				}
-				else if (magMode == 1) {
-					//Keep second magnitude
-					gSynMagn[k] = gAnaMagn2[k];
-				}
-				else if (magMode == 0) {
-					//Keep original magnitude
+				// New code
+				switch (magMode) {
+				case 0:
+					// Keep original magnitude
 					gSynMagn[k] = gAnaMagn[k];
+					break;
+				case 1:
+					// Keep second magnitude
+					gSynMagn[k] = gAnaMagn2[k];
+					break;
+				case 2:
+					// Add Magnitudes
+					gSynMagn[k] = gAnaMagn[k] + gAnaMagn2[k];
+					break;
+				case 3:
+					// Multiply Magnitudes
+					gSynMagn[k] = gAnaMagn[k] * gAnaMagn2[k];
+					break;
+				case 4:
+					// Mask original magnitude with second magnitude if less than thresh
+					gSynMagn[k] = (gAnaMagn[k] < thresh)? gAnaMagn2[k]: gAnaMagn[k];
+					break;
 				}
 
-				if (phaseMode == 2) {
-					//Add Phases
-					gSynFreq[k] = gAnaFreq[k] + gAnaFreq2[k];
-				}
-				else if (phaseMode == 1) {
-					//Keep second Phase
-					gSynFreq[k] = gAnaFreq2[k];
-				}
-				else if (phaseMode == 0) {
-					//Keep original Phase
+				switch (phaseMode) {
+				case 0:
+					// Keep original Phase
 					gSynFreq[k] = gAnaFreq[k];
+					break;
+				case 1:
+					// Keep second Phase
+					gSynFreq[k] = gAnaFreq2[k];
+					break;
+				case 2:
+					// Add Phases
+					gSynFreq[k] = gAnaFreq[k] + gAnaFreq2[k];
+					break;
 				}
 			}
 
@@ -328,17 +313,12 @@ void PhaseVocoderChannel::processAudioChunk(const float *indata, const float *in
 
 
 			/* move input FIFO */
-			for (k = 0; k < inFifoLatency; k++) gInFIFO[k] = gInFIFO[k + stepSize];
-			//Same for second sound
-			for (k = 0; k < inFifoLatency; k++) gInFIFO2[k] = gInFIFO2[k + stepSize];
+			for (k = 0; k < inFifoLatency; k++) {
+				gInFIFO[k] = gInFIFO[k + stepSize];
+				gInFIFO2[k] = gInFIFO2[k + stepSize];
+			}
 		}
 	}
-}
-
-
-void PhaseVocoderChannel::processAudioChunk2(const float *indata, const float *indata2, float *outdata)
-{
-	PV2(thresh, magMode, phaseMode, numSampsToProcess, numSampsToProcess, fftFrameSize, osamp, sampleRate, indata, indata2, outdata);
 }
 
 void PhaseVocoderChannel::smbFft(float *fftBuffer, long fftFrameSize, long sign)
