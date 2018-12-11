@@ -17,7 +17,8 @@ Author:  grace
 #include <chrono>
 #include <math.h>
 #include <fstream>
-#include <iomanip>
+#include <iomanip>
+
 
 int MAGMODE;
 int PHASEMODE;
@@ -31,16 +32,17 @@ PhaseVocoder::PhaseVocoder()
 
 PhaseVocoder::~PhaseVocoder()
 {
+
 }
 
-void PhaseVocoder::changeMagMode(int mag_mode)
+void PhaseVocoder::setMagMode(uint8_t mag_mode)
 {
-	MAGMODE = mag_mode;
+	PhaseVocoder::magMode = mag_mode;
 }
 
-void PhaseVocoder::changePhaseMode(int phase_mode)
+void PhaseVocoder::setPhaseMode(uint8_t phase_mode)
 {
-	PHASEMODE = phase_mode;
+	PhaseVocoder::phaseMode = phase_mode;
 }
 
 void PhaseVocoder::getThreshold(int thre_input)
@@ -49,7 +51,12 @@ void PhaseVocoder::getThreshold(int thre_input)
 
 }
 
-void PhaseVocoder::passParameters(long numSampsToProcess, long numSamps2, long fftFrameSize, long osamp, float sampleRate, const float *indata, const float *indata2, float *outdata)
+void PhaseVocoder::processAudioChunk(long numSampsToProcess, long numSamps2, long fftFrameSize, long osamp, float sampleRate, const float *indata, const float *indata2, float *outdata)
 {
-	PV(thresh, MAGMODE, PHASEMODE, numSampsToProcess, numSamps2, fftFrameSize, osamp, sampleRate, indata, indata2, outdata);
+	PV(thresh, magMode, phaseMode, numSampsToProcess, numSamps2, fftFrameSize, osamp, sampleRate, indata, indata2, outdata);
+}
+
+void PhaseVocoder::processAudioChunk2(long numSampsToProcess, long numSamps2, long fftFrameSize, long osamp, float sampleRate, const float *indata, const float *indata2, float *outdata)
+{
+	PV2(thresh, magMode, phaseMode, numSampsToProcess, numSamps2, fftFrameSize, osamp, sampleRate, indata, indata2, outdata);
 }

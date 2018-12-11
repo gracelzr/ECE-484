@@ -18,14 +18,18 @@ class PhaseVocoder
 {
 
 public:
+	static uint8_t MAGMODE;
+	static uint8_t PHASEMODE;
+	static uint8_t thresh;
 	PhaseVocoder();
 	~PhaseVocoder();
 
-	void changeMagMode(int);
-	void changePhaseMode(int);
+	void changeMagMode(uint8_t);
+	void changePhaseMode(uint8_t);
 
 	void getThreshold(int);
-	void passParameters(long, long, long, long, float, const float *, const float *, float *);
+	void processAudioChunk(long, long, long, long, float, const float *, const float *, float *);
+	void processAudioChunk2(long, long, long, long, float, const float *, const float *, float *);
 private:
 
 

@@ -54,8 +54,10 @@ ProjectAudioProcessorEditor::ProjectAudioProcessorEditor(ProjectAudioProcessor& 
 	thresholdSlider.setValue(100);
 	thresholdSlider.setColour(Slider::ColourIds::thumbColourId, Colour::fromRGB(150, 0, 175));
 	thresholdSlider.setColour(Slider::ColourIds::trackColourId, Colour::fromRGB(100, 0, 125));
-	thresholdSlider.addListener(this);	thresholdSlider.setBounds((int)((float)getWidth() * 0.1f), (int)(0.2 * getHeight()),
-		(int)((float)getWidth() * 0.5f), (int)((float)getHeight() * 0.2f));
+	thresholdSlider.addListener(this);
+	thresholdSlider.setBounds((int)((float)getWidth() * 0.1f), (int)(0.2 * getHeight()),
+		(int)((float)getWidth() * 0.5f), (int)((float)getHeight() * 0.2f));
+
 	setSize(400, 300);
 }
 
@@ -89,7 +91,8 @@ void ProjectAudioProcessorEditor::PhaseVocoderChanged()
 void ProjectAudioProcessorEditor::buttonClicked(Button * toggleButton)
 {
 	
-}
+}
+
 
 void ProjectAudioProcessorEditor::sliderValueChanged(Slider *slider)
 {
@@ -103,7 +106,6 @@ void ProjectAudioProcessorEditor::sliderValueChanged(Slider *slider)
 		desired = thresholdSlider.getValue();
 		//thresholdSlider.setValue(desired);
 		pv->getThreshold(desired);
-		std::string label_str = std::to_string(desired) + " dB";
 	}
 }
 

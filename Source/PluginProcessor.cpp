@@ -19,9 +19,9 @@ ProjectAudioProcessor::ProjectAudioProcessor()
 #if ! JucePlugin_IsMidiEffect
 #if ! JucePlugin_IsSynth
 		.withInput("Input", AudioChannelSet::stereo(), true)
-		//.withInput("Input1", AudioChannelSet::stereo(), true)
+		.withInput("Input1", AudioChannelSet::stereo(), true)
 #endif
-		.withOutput("Output", AudioChannelSet::mono(), true)
+		.withOutput("Output", AudioChannelSet::stereo(), true)
 #endif
 	), valueTreeState(*this, nullptr)
 #endif
@@ -180,24 +180,15 @@ void ProjectAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer&
 	// Alternatively, you can process the samples with the channels
 	// interleaved by keeping the same state.
 	auto numSample = buffer.getNumSamples();
-
-	AudioBuffer<float> inbuf(2, numSample);
-
-	inbuf.copyFrom(0, 0, buffer.getReadPointer(0), numSample);
-	inbuf.copyFrom(1, 0, buffer.getReadPointer(1), numSample);
-
-	auto* indata = inbuf.getReadPointer(0);	
-	auto* indata1 = inbuf.getReadPointer(1);
-	
-	auto* outdata = buffer.getWritePointer(0);
-	auto* outdata1 = buffer.getWritePointer(1);
-
-	//PV(25, 2, 1, numSample, numSample, 2048, 4, 44100, indata, indata2, outdata);
 	// ..do something to the data...
-	pv->passParameters(numSample, numSample, fftFrameSize, osamp, SAMPLE_RATE, indata, indata1, outdata);
-	//pv->passParameters(numSample, numSample, fftFrameSize, osamp, SAMPLE_RATE, indata, buffer.getReadPointer(2), outdata);
-	//pv->passParameters(numSample, numSample, fftFrameSize, osamp, SAMPLE_RATE, indata1, buffer.getReadPointer(3), outdata1);
 
+	AudioBuffer<float> outbuf(2, numSample);
+	
+	pv->processAudioChunk(numSample, numSample, fftFrameSize, osamp, SAMPLE_RATE, buffer.getReadPointer(0), buffer.getReadPointer(2), outbuf.getWritePointer(0));
+	pv->processAudioChunk2(numSample, numSample, fftFrameSize, osamp, SAMPLE_RATE, buffer.getReadPointer(1), buffer.getReadPointer(3), outbuf.getWritePointer(1));
+
+	buffer.copyFrom(0, 0, outbuf.getReadPointer(0), numSample);
+	buffer.copyFrom(1, 0, outbuf.getReadPointer(1), numSample);
 }
 
 //==============================================================================

@@ -10,3 +10,4 @@
 
 void smbFft(float *, long , long );
 void PV(float, int, int, long, long, long, long, float, const float *, const float *, float *);
+void PV2(float, int, int, long, long, long, long, float, const float *, const float *, float *);
