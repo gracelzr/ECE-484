@@ -21,7 +21,7 @@ ProjectAudioProcessorEditor::ProjectAudioProcessorEditor(ProjectAudioProcessor& 
 	// editor's size to whatever you need it to be.
 	setSize(400, 300);
 
-	pv = new PhaseVocoder();
+	pv = new PhaseVocoderChannel();
 
 
 	//combobox Magniude
@@ -105,7 +105,7 @@ void ProjectAudioProcessorEditor::sliderValueChanged(Slider *slider)
 		//uint32_t mid = (low + high) / 2;
 		desired = thresholdSlider.getValue();
 		//thresholdSlider.setValue(desired);
-		pv->getThreshold(desired);
+		pv->setThreshold(desired);
 	}
 }
 
@@ -120,7 +120,7 @@ void ProjectAudioProcessorEditor::comboBoxChanged(ComboBox* comboBoxThatHasChang
 		{
 		case 1:
 			//keep mag1
-			pv->changeMagMode(0);
+			pv->setMagMode(0);
 			thresholdSlider.setVisible(false);
 			thres_range.setVisible(false);
 			toggle.setVisible(false);
@@ -128,28 +128,28 @@ void ProjectAudioProcessorEditor::comboBoxChanged(ComboBox* comboBoxThatHasChang
 			break;
 		case 2:
 			//keep mag2
-			pv->changeMagMode(1);
+			pv->setMagMode(1);
 			thresholdSlider.setVisible(false);
 			thres_range.setVisible(false);
 			toggle.setVisible(false);
 			break;
 		case 3:
 			//add mag1 and mag2
-			pv->changeMagMode(2);
+			pv->setMagMode(2);
 			thresholdSlider.setVisible(false);
 			thres_range.setVisible(false);
 			toggle.setVisible(false);
 			break;
 		case 4:
 			//multiply mag1 and mag2
-			pv->changeMagMode(3);
+			pv->setMagMode(3);
 			thresholdSlider.setVisible(false);
 			thres_range.setVisible(false);
 			toggle.setVisible(false);
 			break;
 		case 5:
 			//mask
-			pv->changeMagMode(4);
+			pv->setMagMode(4);
 			thresholdSlider.setVisible(true);
 			thres_range.setVisible(true);
 			toggle.setVisible(true);
@@ -161,19 +161,19 @@ void ProjectAudioProcessorEditor::comboBoxChanged(ComboBox* comboBoxThatHasChang
 		switch (phase_mode.getSelectedId())
 		{
 		case 1:
-			pv->changePhaseMode(0);
+			pv->setPhaseMode(0);
 			thresholdSlider.setVisible(false);
 			thres_range.setVisible(false);
 			toggle.setVisible(false);
 			break;
 		case 2:
-			pv->changePhaseMode(1);
+			pv->setPhaseMode(1);
 			thresholdSlider.setVisible(false);
 			thres_range.setVisible(false);
 			toggle.setVisible(false);
 			break;
 		case 3:
-			pv->changePhaseMode(2);
+			pv->setPhaseMode(2);
 			thresholdSlider.setVisible(false);
 			thres_range.setVisible(false);
 			toggle.setVisible(false);

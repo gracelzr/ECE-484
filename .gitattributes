@@ -1,0 +1,5 @@
+# Set the default behavior, in case people don't have core.autocrlf set.
+*.sln text eol=crlf
+*.cpp text eol=crlf
+*.h text eol=crlf
+*.c text eol=crlf

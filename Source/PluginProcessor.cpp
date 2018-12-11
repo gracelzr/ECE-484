@@ -26,7 +26,9 @@ ProjectAudioProcessor::ProjectAudioProcessor()
 	), valueTreeState(*this, nullptr)
 #endif
 {
-	pv = new PhaseVocoder();
+	PhaseVocoderChannel::initParams(0, 0, 0, FFT_FRAME_SIZE, OSAMP);
+	pv = new PhaseVocoderChannel();
+	pv2 = new PhaseVocoderChannel();
 }
 
 
@@ -180,12 +182,17 @@ void ProjectAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer&
 	// Alternatively, you can process the samples with the channels
 	// interleaved by keeping the same state.
 	auto numSample = buffer.getNumSamples();
+	auto sampleRate = getSampleRate();
 	// ..do something to the data...
 
 	AudioBuffer<float> outbuf(2, numSample);
 	
-	pv->processAudioChunk(numSample, numSample, fftFrameSize, osamp, SAMPLE_RATE, buffer.getReadPointer(0), buffer.getReadPointer(2), outbuf.getWritePointer(0));
-	pv->processAudioChunk2(numSample, numSample, fftFrameSize, osamp, SAMPLE_RATE, buffer.getReadPointer(1), buffer.getReadPointer(3), outbuf.getWritePointer(1));
+	//pv->processAudioChunk(numSample, numSample, FFT_FRAME_SIZE, OSAMP, SAMPLE_RATE, buffer.getReadPointer(0), buffer.getReadPointer(2), outbuf.getWritePointer(0));
+	//pv->processAudioChunk2(numSample, numSample, FFT_FRAME_SIZE, OSAMP, SAMPLE_RATE, buffer.getReadPointer(1), buffer.getReadPointer(3), outbuf.getWritePointer(1));
+
+	PhaseVocoderChannel::setRuntimeParams(numSample, sampleRate);
+	pv->processAudioChunk(buffer.getReadPointer(0), buffer.getReadPointer(2), outbuf.getWritePointer(0));
+	pv2->processAudioChunk( buffer.getReadPointer(0), buffer.getReadPointer(2), outbuf.getWritePointer(1));
 
 	buffer.copyFrom(0, 0, outbuf.getReadPointer(0), numSample);
 	buffer.copyFrom(1, 0, outbuf.getReadPointer(1), numSample);

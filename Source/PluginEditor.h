@@ -21,7 +21,7 @@ class ProjectAudioProcessorEditor : public AudioProcessorEditor, public Slider::
 public:
 	ProjectAudioProcessorEditor(ProjectAudioProcessor&);
 	~ProjectAudioProcessorEditor();
-	PhaseVocoder * pv;
+	PhaseVocoderChannel * pv;
 	//==============================================================================
 	void paint(Graphics&) override;
 	void resized() override;

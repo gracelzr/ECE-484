@@ -25,9 +25,9 @@
 * the pitch. numSampsToProcess tells the routine how many samples in indata[0...
 * numSampsToProcess-1] should be pitch shifted and moved to outdata[0 ...
 * numSampsToProcess-1]. The two buffers can be identical (ie. it can process the
-* data in-place). fftFrameSize defines the FFT frame size used for the
+* data in-place). FFT_FRAME_SIZE defines the FFT frame size used for the
 * processing. Typical values are 1024, 2048 and 4096. It may be any value <=
-* MAX_FRAME_LENGTH but it MUST be a power of 2. osamp is the STFT
+* MAX_FRAME_LENGTH but it MUST be a power of 2. OSAMP is the STFT
 * oversampling factor which also determines the overlap between adjacent STFT
 * frames. It should at least be 4 for moderate scaling ratios. A value of 32 is
 * recommended for best quality. sampleRate takes the sample rate for the signal 
@@ -264,7 +264,7 @@ void PV(float thresh, int MAGMODE, int PHASEMODE, long numSampsToProcess, long n
                                 tmp /= freqPerBin;
 
 
-                                /* take osamp into account */
+                                /* take OSAMP into account */
                                 tmp = 2.*M_PI*tmp/osamp;
 
 
@@ -533,7 +533,7 @@ void PV2(float thresh, int MAGMODE, int PHASEMODE, long numSampsToProcess, long 
 				tmp /= freqPerBin;
 
 
-				/* take osamp into account */
+				/* take OSAMP into account */
 				tmp = 2.*M_PI*tmp / osamp;
 
 
@@ -587,14 +587,14 @@ void PV2(float thresh, int MAGMODE, int PHASEMODE, long numSampsToProcess, long 
 void smbFft(float *fftBuffer, long fftFrameSize, long sign)
 /* 
         FFT routine, (C)1996 S.M.Bernsee. Sign = -1 is FFT, 1 is iFFT (inverse)
-        Fills fftBuffer[0...2*fftFrameSize-1] with the Fourier transform of the
-        time domain data in fftBuffer[0...2*fftFrameSize-1]. The FFT array takes
+        Fills fftBuffer[0...2*FFT_FRAME_SIZE-1] with the Fourier transform of the
+        time domain data in fftBuffer[0...2*FFT_FRAME_SIZE-1]. The FFT array takes
         and returns the cosine and sine parts in an interleaved manner, ie.
-        fftBuffer[0] = cosPart[0], fftBuffer[1] = sinPart[0], asf. fftFrameSize
+        fftBuffer[0] = cosPart[0], fftBuffer[1] = sinPart[0], asf. FFT_FRAME_SIZE
         must be a power of 2. It expects a complex input signal (see footnote 2),
         ie. when working with 'common' audio signals our input signal has to be
         passed as {in[0],0.,in[1],0.,in[2],0.,...} asf. In that case, the transform
-        of the frequencies of interest is in fftBuffer[0...fftFrameSize].
+        of the frequencies of interest is in fftBuffer[0...FFT_FRAME_SIZE].
 */
 {
         float wr, wi, arg, *p1, *p2, temp;
