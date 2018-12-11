@@ -19,9 +19,9 @@ ProjectAudioProcessor::ProjectAudioProcessor()
 #if ! JucePlugin_IsMidiEffect
 #if ! JucePlugin_IsSynth
 		.withInput("Input", AudioChannelSet::stereo(), true)
-		//.withInput("Input1", AudioChannelSet::stereo(), true)
+		.withInput("Input1", AudioChannelSet::stereo(), true)
 #endif
-		.withOutput("Output", AudioChannelSet::mono(), true)
+		.withOutput("Output", AudioChannelSet::stereo(), true)
 #endif
 	), valueTreeState(*this, nullptr)
 #endif
@@ -194,9 +194,9 @@ void ProjectAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer&
 
 	//PV(25, 2, 1, numSample, numSample, 2048, 4, 44100, indata, indata2, outdata);
 	// ..do something to the data...
-	pv->passParameters(numSample, numSample, fftFrameSize, osamp, SAMPLE_RATE, indata, indata1, outdata);
-	//pv->passParameters(numSample, numSample, fftFrameSize, osamp, SAMPLE_RATE, indata, buffer.getReadPointer(2), outdata);
-	//pv->passParameters(numSample, numSample, fftFrameSize, osamp, SAMPLE_RATE, indata1, buffer.getReadPointer(3), outdata1);
+	//pv->passParameters(numSample, numSample, fftFrameSize, osamp, SAMPLE_RATE, indata, indata1, outdata);
+	pv->passParameters(numSample, numSample, fftFrameSize, osamp, SAMPLE_RATE, indata, buffer.getReadPointer(2), outdata);
+	pv->passParameters(numSample, numSample, fftFrameSize, osamp, SAMPLE_RATE, indata1, buffer.getReadPointer(3), outdata1);
 
 }
 
